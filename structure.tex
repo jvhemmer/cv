@@ -92,9 +92,16 @@ SmallCapsFeatures = {Letters = SmallCaps}
 
 \pagestyle{full}
 
+% \dotfill but using a cdot instead of a regular dot. Credit: https://tex.stackexchange.com/questions/392739/how-to-fill-dots-between-two-textsdots-aligned-at-the-center-of-the-text
+\makeatletter
+\newcommand\cdotfill{%
+    \leavevmode\cleaders\hb@xt@.44em{\hss$\cdot$\hss}\hfill\kern\z@
+}
+\makeatother
+
 \EveryShipout{%
   \ifdim\pagetotal>\pagegoal% There is content overflow on this page
-    \AddToHookNext{shipout/after}{\displaysectiontitle\, (continued)\par\bigskip}
+    \AddToHookNext{shipout/after}{\displaysectiontitle\, (continued)\cdotfill\par\bigskip}
   \fi%
 }
 

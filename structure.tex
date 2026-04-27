@@ -99,10 +99,30 @@ SmallCapsFeatures = {Letters = SmallCaps}
 }
 \makeatother
 
+\newif\ifskipnextcontinued
+\skipnextcontinuedfalse
+
+\newcommand{\skipcontinued}{%
+  \global\skipnextcontinuedtrue
+}
+
 \EveryShipout{%
-  \ifdim\pagetotal>\pagegoal% There is content overflow on this page
-    \AddToHookNext{shipout/after}{\displaysectiontitle\, (continued)\cdotfill\par\bigskip}
-  \fi%
+  \ifdim\pagetotal>\pagegoal
+    \ifskipnextcontinued
+      \global\skipnextcontinuedfalse
+    \else
+      \AddToHookNext{shipout/after}{%
+        \displaysectiontitle\, (continued)\cdotfill\par\bigskip
+      }%
+    \fi
+  \fi
+}
+
+\newcommand{\continuednewpage}{%
+  \AddToHookNext{shipout/after}{%
+    \displaysectiontitle\, (continued)\cdotfill\par\bigskip
+  }%
+  \newpage
 }
 
 \setlength\parindent{0pt} % Stop paragraph indentation

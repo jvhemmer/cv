@@ -50,6 +50,8 @@
 
 \usepackage{amsmath} % Math
 
+\usepackage{needspace} % Keep grouped content together across page breaks
+
 \usepackage{tabularx} % Tables with more options
 
 % Define colors used in the document
@@ -143,12 +145,13 @@
 	\par
 	\begingroup
 	\offinterlineskip
+	\vspace{0.05in}
 	\leaders\vbox to 1em{%
 			\vss
 			\hbox to \textwidth{\hfil.\hfil}%
 			\vss
 		}\vfill
-	\vspace*{-8mm}
+	\vspace*{-0.5in}
 	\endgroup
 }
 
@@ -202,17 +205,55 @@
 %	PUBLICATION COMMAND
 %----------------------------------------------------------------------------------------
 
-% \newcommand{\publication}[5]{
-% \begin{tabbing}
-% \hspace{2cm} \= \kill
-% \textbf{#1} \> #2 \\
-% \textbf{} \>\+ \textit{#3} \\
-% \begin{minipage}{\smallertextwidth}
-% \href{#5}{#4}
-% \end{minipage}
-% \end{tabbing}
-% \vspace{2mm}
-% }
+\newlength{\pubyearwidth}
+\setlength{\pubyearwidth}{0.75in}
+\newlength{\pubgutter}
+\setlength{\pubgutter}{1em}
+\newlength{\pubcontentwidth}
+\setlength{\pubcontentwidth}{\dimexpr\textwidth-\pubyearwidth-\pubgutter\relax}
+\newlength{\pubrowsep}
+\setlength{\pubrowsep}{0em}
+\newsavebox{\pubcontentbox}
+\newif\ifprintpubyear
+\printpubyearfalse
+\newif\iffirstpubinyear
+\firstpubinyeartrue
+\newcommand{\currentpubyear}{}
+
+\newcommand{\publicationyear}[1]{%
+	\par
+	\vspace{\baselineskip}%
+	\gdef\currentpubyear{#1}%
+	\global\printpubyeartrue
+	\global\firstpubinyeartrue
+}
+
+\newcommand{\publication}[4]{%
+	\sbox{\pubcontentbox}{%
+		\begin{minipage}[t]{\pubcontentwidth}%
+			\iffirstpubinyear\else\vspace*{\pubrowsep}\fi
+			#1\vspace{0.25em}\\
+			#2\\
+			\textit{#3}\\
+			\href{#4}{#4}%
+		\end{minipage}%
+	}%
+	\begingroup
+	\count255=\value{page}%
+	\Needspace{\dimexpr\ht\pubcontentbox+\dp\pubcontentbox+2\baselineskip\relax}%
+	\ifnum\value{page}>\count255
+		\global\printpubyeartrue
+	\fi
+	\endgroup
+	\noindent
+	\begin{tabularx}{\textwidth}{@{}>{\columncolor{lightblue}}p{\pubyearwidth}@{\hspace{\pubgutter}}p{\pubcontentwidth}@{}}
+		\centering\textbf{\ifprintpubyear\currentpubyear\else\strut\fi} &
+		\usebox{\pubcontentbox}
+	\end{tabularx}%
+	\par\nointerlineskip
+	\global\printpubyearfalse
+	\global\firstpubinyearfalse
+}
 
 %----------------------------------------------------------------------------------------
 %	SKILL GROUP COMMAND

@@ -126,6 +126,10 @@
 %   \fi
 % }
 
+\newcommand{\showsectioncontinued}{%
+    \displaysectiontitle\, (continued)\cdotfill\par
+}
+
 \newcommand{\continuednewpage}{%
 	\AddToHookNext{shipout/after}{%
 		\displaysectiontitle\, (continued)\cdotfill\par
@@ -151,7 +155,7 @@
 			\hbox to \textwidth{\hfil.\hfil}%
 			\vss
 		}\vfill
-	\vspace*{-0.5in}
+	\vspace*{-0.4in}
 	\endgroup
 }
 
@@ -212,7 +216,7 @@
 \newlength{\pubcontentwidth}
 \setlength{\pubcontentwidth}{\dimexpr\textwidth-\pubyearwidth-\pubgutter\relax}
 \newlength{\pubrowsep}
-\setlength{\pubrowsep}{0em}
+\setlength{\pubrowsep}{0.5\baselineskip}
 \newsavebox{\pubcontentbox}
 \newif\ifprintpubyear
 \printpubyearfalse
@@ -228,14 +232,14 @@
 	\global\firstpubinyeartrue
 }
 
-\newcommand{\publication}[4]{%
+\newcommand{\publication}[5]{%
 	\sbox{\pubcontentbox}{%
 		\begin{minipage}[t]{\pubcontentwidth}%
 			\iffirstpubinyear\else\vspace*{\pubrowsep}\fi
-			#1\vspace{0.25em}\\
+			#1\vspace{0.1em}\\
 			#2\\
 			\textit{#3}\\
-			\href{#4}{#4}%
+			\href{#4}{#5}%
 		\end{minipage}%
 	}%
 	\begingroup
@@ -246,7 +250,7 @@
 	\fi
 	\endgroup
 	\noindent
-	\begin{tabularx}{\textwidth}{@{}>{\columncolor{lightblue}}p{\pubyearwidth}@{\hspace{\pubgutter}}p{\pubcontentwidth}@{}}
+	\begin{tabularx}{\textwidth}{@{}>{\columncolor{lightblue}[0pt][0pt]}p{\pubyearwidth}@{\hspace{\pubgutter}}p{\pubcontentwidth}@{}}
 		\centering\textbf{\ifprintpubyear\currentpubyear\else\strut\fi} &
 		\usebox{\pubcontentbox}
 	\end{tabularx}%

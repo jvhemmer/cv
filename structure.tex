@@ -99,6 +99,7 @@
 \renewcommand{\footrulewidth}{0pt} % Disable the default footer rule
 
 \pagestyle{full}
+\raggedbottom
 
 % \dotfill but using a cdot instead of a regular dot. Credit: https://tex.stackexchange.com/questions/392739/how-to-fill-dots-between-two-textsdots-aligned-at-the-center-of-the-text
 \makeatletter
@@ -355,4 +356,57 @@
 
 	\centering\textbf{#1} & \textit{#2} \\
 	& Instructor: #3
+}
+
+% Timeline that keeps each logical item together and adds a continuation page when needed.
+\newsavebox{\autotimelinebox}
+\newcounter{timelinecoursecount}
+\newlength{\autotimelinereserve}
+\setlength{\autotimelinereserve}{2\baselineskip}
+\newif\ifautotimelineheader
+
+\NewDocumentEnvironment{autotimeline}{m O{}}{%
+	\def\autotimelineinstitution{#1}%
+	\def\autotimelineurl{#2}%
+	\autotimelineheadertrue
+}{%
+	\par
+}
+
+\NewDocumentCommand{\timelinecourse}{m m}{%
+	\ifnum\value{timelinecoursecount}>0
+		\par\vspace{0.6\baselineskip}%
+	\fi
+	\stepcounter{timelinecoursecount}%
+	\textit{#1}\par
+	Instructor: #2%
+}
+
+\newcommand{\buildtimelineitem}[2]{%
+	\setcounter{timelinecoursecount}{0}%
+	\sbox{\autotimelinebox}{%
+		\begin{minipage}{\textwidth}
+			\begin{tabularx}{\textwidth}{>{\columncolor{lightblue}\centering\arraybackslash}p{1.8cm}X}
+				\ifautotimelineheader
+					& \textbf{\ifstrempty{\autotimelineurl}{\autotimelineinstitution}{\href{\autotimelineurl}{\autotimelineinstitution}}}\vspace{0.1cm} \\
+				\fi
+				\textbf{#1} & #2
+			\end{tabularx}
+		\end{minipage}%
+	}%
+}
+
+\NewDocumentCommand{\timelineitem}{m +m}{%
+	\buildtimelineitem{#1}{#2}%
+	\dimen0=\dimexpr\ht\autotimelinebox+\dp\autotimelinebox+\autotimelinereserve\relax
+	\dimen2=\dimexpr\pagegoal-\pagetotal\relax
+	\ifdim\dimen0>\dimen2
+		\centervdottofooter
+		\continuednewpage
+		\vspace{\baselineskip}%
+		\autotimelineheadertrue
+		\buildtimelineitem{#1}{#2}%
+	\fi
+	\noindent\usebox{\autotimelinebox}\par\nointerlineskip
+	\autotimelineheaderfalse
 }
